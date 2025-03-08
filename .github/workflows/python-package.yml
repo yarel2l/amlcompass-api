@@ -13,6 +13,10 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
+    env:
+      CONSUMER_KEY: ${{ secrets.CONSUMER_KEY }}
+      CONSUMER_SECRET: ${{ secrets.CONSUMER_SECRET }}
+      API_URL: ${{ secrets.API_URL }}
     strategy:
       fail-fast: false
       matrix:
