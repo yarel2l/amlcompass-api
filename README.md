@@ -8,32 +8,67 @@ A Python client library for interacting with the AML Optima Compass API.
 pip install amlcompass_api
 ```
 
-## Quick Start
+## Configuration
 
-1. Create `.env` file in your project root:
+There are two ways to configure the client:
+
+### Environment Variables (Recommended)
+
+Create a `.env` file in your project root:
+
 ```plaintext
-CONSUMER_KEY=<your_consumer_key>
-CONSUMER_SECRET=<your_consumer_secret>
+CONSUMER_KEY=your_consumer_key
+CONSUMER_SECRET=your_consumer_secret
 API_URL=https://api.amlcompass.com
 ```
 
-2. Basic Usage:
+### Explicit Configuration
+
 ```python
-from amlcompass_api import aml_client
-from typing import Dict
+from amlcompass_api import AMLCompassAPIClient
 
-# Get transaction details
-def get_transaction(transaction_id: str) -> Dict:
-    return aml_client.transaction_service.get_data(transaction_id)
-
-# Add document to transaction
-def add_document(transaction_id: str, document_url: str, doc_type_id: int) -> Dict:
-    return aml_client.transaction_service.add_document(
-        transaction_id=transaction_id,
-        document_url=document_url,
-        document_type_id=doc_type_id
-    )
+aml_client = AMLCompassAPIClient(
+    consumer_key="your_consumer_key",
+    consumer_secret="your_consumer_secret",
+    api_url="https://api.amlcompass.com"
+)
 ```
+
+## Usage Examples
+
+### Transaction Operations
+
+```python
+from amlcompass_api import AMLCompassAPIClient
+
+# Define transaction data
+transaction_id: str = "123456"
+document_url: str = "https://example.com/document.pdf"
+document_type: int = 1
+
+# Initialize client. 
+# If you have set environment variables, you can skip the explicit configuration.
+aml_client = AMLCompassAPIClient()
+
+# Check if a transaction is valid:
+aml_client.transaction_service.is_valid(transaction_id)
+
+# Get Transaction Data:
+aml_client.transaction_service.get_data(transaction_id)
+
+# Add a document to a transaction:
+aml_client.transaction_service.add_document(transaction_id, document_url, document_type)
+
+
+# Responses example:
+{
+  "data": {"valid": True, "transaction_id": "123456"},
+  "status_code": 200,
+}
+
+
+```
+
 
 ## Available Features
 
@@ -48,6 +83,21 @@ def add_document(transaction_id: str, document_url: str, doc_type_id: int) -> Di
 - **Future Services** (Coming Soon)
 
 ## Development
+
+### Setup Local Environment
+
+```bash
+# Clone repository
+git clone https://github.com/yarel2l/amlcompass_api.git
+cd amlcompass_api
+
+# Install development dependencies
+pip install -r requirements.txt
+
+# Run tests
+pytest
+```
+
 
 ### Contributing
 

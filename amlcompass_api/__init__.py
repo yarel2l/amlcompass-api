@@ -11,9 +11,12 @@ def custom_exception_handler(exc_type, exc_value, exc_traceback):
 sys.excepthook = custom_exception_handler
 
 
-from amlcompass_api.client import AMLCompassAPIClient, aml_client
+from amlcompass_api.client import AMLCompassAPIClient
+from amlcompass_api import exceptions
+from amlcompass_api import response
 
 __all__ = [
     "AMLCompassAPIClient",
-    "aml_client"
+    "exceptions",
+    "response"
 ]
