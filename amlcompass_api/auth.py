@@ -1,5 +1,8 @@
+import logging
 import requests
 from requests_oauthlib import OAuth1Session
+
+logger = logging.getLogger(__name__)
 
 
 class AMLCompassAPIAuth:
@@ -28,8 +31,11 @@ class AMLCompassAPIAuth:
         return True
 
     def get_request_token(self):
-        print(f"Attempting to obtain request token with consumer_key: {self.consumer_key[:5]}...")
-        print(f"Request URL: {self.request_token_url}")
+        logger.info(
+            "Attempting to obtain request token with consumer_key: %s...",
+            self.consumer_key[:5]
+        )
+        logger.debug("Request URL: %s", self.request_token_url)
 
         try:
             oauth = OAuth1Session(
@@ -39,18 +45,22 @@ class AMLCompassAPIAuth:
             )
 
             headers = {'Accept': 'application/json'}
-            response = oauth.fetch_request_token(self.request_token_url, headers=headers, timeout=30)
-            print(f"Token obtained successfully: {response}")
+            response = oauth.fetch_request_token(
+                self.request_token_url,
+                headers=headers,
+                timeout=30
+            )
+            logger.info("Token obtained successfully: %s", response)
             return response
         except Exception as e:
-            print(f"Detailed error: {str(e)}")
+            logger.error("Detailed error: %s", str(e))
 
             # Verify that the server responds
             try:
                 base_resp = requests.get(self.api_url, timeout=5)
-                print(f"API base responds: {base_resp.status_code}")
+                logger.debug("API base responds: %s", base_resp.status_code)
             except Exception as base_err:
-                print(f"API not accessible: {str(base_err)}")
+                logger.error("API not accessible: %s", str(base_err))
 
             raise
 
@@ -96,7 +106,10 @@ class AMLCompassAPIAuth:
                 verifier = self.get_verifier_programmatically(request_token)
             else:
                 auth_url = self.get_authorization_url(request_token)
-                print("Please visit the following URL and authorize the application:", auth_url)
+                logger.info(
+                    "Please visit the following URL and authorize the application: %s",
+                    auth_url
+                )
                 verifier = input("Enter the provided verifier: ").strip()
 
             self.get_access_token(request_token, request_token_secret, verifier)
@@ -108,8 +121,8 @@ class AMLCompassAPIAuth:
             return self.access_token, self.access_token_secret
 
         except Exception as e:
-            print(f"Authentication error: {str(e)}")
+            logger.error("Authentication error: %s", str(e))
             if use_programmatic_verifier:
-                print("Retrying with manual method...")
+                logger.info("Retrying with manual method...")
                 return self.authenticate(use_programmatic_verifier=False)
             raise
